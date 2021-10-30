@@ -37,8 +37,6 @@ const TIME_STEP: f64 = 0.001;
 const GRAV_CONST: f64 = 10.0;
 const MAX_FORCE: f64 = 10.0;
 const FRICTION: f64 = 0.1;
-const SIGMOID_PARAM: f64 = 6.0;
-const DECAY: f64 = 1.0;
 fn make_image(
     num_objects: usize,
     size: u32,
@@ -46,6 +44,7 @@ fn make_image(
     log_sdev_mass: f64,
     updates_per_object: usize,
     num_steps: usize,
+    sigmoid_param: f64,
     seed: u64,
 ) -> RgbImage {
     let mut rng = StdRng::seed_from_u64(seed);
@@ -147,7 +146,7 @@ fn make_image(
                     det_img[row as usize][col as usize]
                         .iter_mut()
                         .enumerate()
-                        .for_each(|(i, c)| *c = *c * DECAY + object.color[i]);
+                        .for_each(|(i, c)| *c += object.color[i]);
                 }
             }
         }
@@ -156,7 +155,7 @@ fn make_image(
     for r in 0..size {
         for c in 0..size {
             let det_color = det_img[r as usize][c as usize]
-                .map(|channel| (255.0 / (1.0 + (channel / SIGMOID_PARAM).exp())) as u8);
+                .map(|channel| (255.0 / (1.0 + (channel / sigmoid_param).exp())) as u8);
             img.put_pixel(r, c, Rgb(det_color));
         }
     }
@@ -170,10 +169,11 @@ fn main() -> Result<(), ImageError> {
     let log_sdev_mass = 4;
     let updates_per_object = 5;
     let num_steps = 10000;
+    let sigmoid_param = 4;
     let seed = 0;
     let filename = format!(
-        "img-{}-{}-{}-{}-{}-{}-{}.png",
-        num_objects, size, log_mean_mass, log_sdev_mass, updates_per_object, num_steps, seed
+        "img-{}-{}-{}-{}-{}-{}-{}-{}.png",
+        num_objects, size, log_mean_mass, log_sdev_mass, updates_per_object, num_steps, sigmoid_param, seed
     );
     println!("{}", filename);
     let img = make_image(
@@ -183,6 +183,7 @@ fn main() -> Result<(), ImageError> {
         log_sdev_mass as f64,
         updates_per_object,
         num_steps,
+        sigmoid_param as f64,
         seed,
     );
     img.save(filename)
