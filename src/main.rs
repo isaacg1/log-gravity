@@ -107,6 +107,18 @@ fn make_image(
             // Update position
             object.center[0] += TIME_STEP * object.velocity[0];
             object.center[1] += TIME_STEP * object.velocity[1];
+            if object.center[0] >= size as f64 {
+                object.center[1] -= size as f64;
+            }
+            if object.center[0] < 0.0 {
+                object.center[0] += size as f64;
+            }
+            if object.center[1] >= size as f64 {
+                object.center[1] -= size as f64;
+            }
+            if object.center[1] < 0.0 {
+                object.center[1] += size as f64;
+            }
             // Friction
             let speed: f64 = object
                 .velocity
