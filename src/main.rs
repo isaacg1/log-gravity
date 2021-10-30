@@ -163,13 +163,13 @@ fn make_image(
 }
 
 fn main() -> Result<(), ImageError> {
-    let num_objects = 100;
-    let size = 1000;
+    let num_objects = 400;
+    let size = 2000;
     let log_mean_mass = 3;
     let log_sdev_mass = 4;
     let updates_per_object = 5;
-    let num_steps = 10000;
-    let sigmoid_param = 4;
+    let num_steps = 100000;
+    let sigmoid_param = 10;
     let seed = 0;
     let filename = format!(
         "img-{}-{}-{}-{}-{}-{}-{}-{}.png",
